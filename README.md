@@ -29,7 +29,7 @@ uncertainty.*
 - Install Python 3.12.2 and all dependencies mentioned above.
 - To clone this repo:
 ```
-git clone ...
+git clone https://github.com/pkmtum/PANIS.git
 cd PANIS
 ```
 

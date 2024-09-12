@@ -42,7 +42,6 @@ cd ..
 tar -xzf Datasets.tar.gz
 ```
 - at ./Datasets/ you will find four folders, which contain the labeled data used for training or validating the models. PANIS, mPANIS or nPANIS don't use these data for training but only for validation.
-- at ./pino_comparison_data you will find the results of PINO for the respective datasets.
 - at ./utils/trainedNNs you will find pretrained PANIS, mPANIs, nPANIS models for out-of-distribution predictions or other tests.
 
 ## How to Run

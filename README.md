@@ -1,6 +1,6 @@
 # Physics-Aware Neural Implicit Solvers for multiscale, parametric PDEs with applications in heterogeneous media
 
-![PANIS](docs/comparision.png)
+![PANIS](docs/comparison.png)
 
 <img src="docs/comparison.png" width="720" height="501"/>
 

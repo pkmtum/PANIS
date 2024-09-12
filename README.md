@@ -36,7 +36,7 @@ cd PANIS
 ## Data Description
 - Before running the code, to extract some indicative validation data execute:
 ```
-cd ./Datasets
+cd ./data
 cat Datasets.tar.gz.part_* > ../Datasets.tar.gz
 cd ..
 tar -xzf Datasets.tar.gz

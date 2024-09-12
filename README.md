@@ -26,7 +26,7 @@ uncertainty.*
 -  pandas 2.2.2
 
 ## Installation
-- Install Matlab 2018b, python 3.12.2 and all dependencies mentioned above.
+- Install Python 3.12.2 and all dependencies mentioned above.
 - To clone this repo:
 ```
 git clone ...
@@ -46,7 +46,7 @@ tar -xzf Datasets.tar.gz
 - at ./utils/trainedNNs you will find pretrained PANIS, mPANIs, nPANIS models for out-of-distribution predictions or other tests.
 
 ## How to Run
-Depending on the model you want to run (PANIS or mPANIS or nPANIS) just select the respective input file and replace the existing one (input.py). Execute the main.py and the code will train and give predictions in the end. Some plots will be created too. In the current form, 24 GB of GPU memory are required to run, but you can proportionaly decrease the memory needs by reducing the "Nx_samp" parameter. The code model will be trained successfully as before but it will require proportionally more SVI iterations to converge.
+Depending on the model you want to run (PANIS or mPANIS or nPANIS) select the respective input file and replace the existing one (input.py). Execute the main.py and the code will train and give predictions in the end. Some plots will be created too. In the current form, 24 GB of GPU memory is required to run, but you can proportionally decrease the memory needs by reducing the "Nx_samp" parameter. The code model will be trained successfully as before but it will require proportionally more SVI iterations to converge.
 
 ## Citation
 If this code is relevant for your research, we would be grateful if you cite our work:

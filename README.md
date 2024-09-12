@@ -1,7 +1,5 @@
 # Physics-Aware Neural Implicit Solvers for multiscale, parametric PDEs with applications in heterogeneous media
 
-![PANIS](./docs/comparison.png)
-
 <img src="./docs/comparison.png" width="720" height="501"/>
 
 **Physics-Aware Neural Implicit Solvers for multiscale, parametric PDEs with applications in heterogeneous media**
@@ -21,7 +19,11 @@ how the proposed framework can accommodate and generalize several existing learn
 objectives and architectures while yielding probabilistic surrogates that can quantify predictive
 uncertainty.*
 ## Dependences
-- To be determined empirically
+-  Fenics 2019.1.0 (It is recommended to install this first and the rest of the dependences by using pip to avoid conflicts)
+-  torch with cuda 12.1 (pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121)
+-  scipy-1.14.1
+-  matplotlib 3.9.2
+-  pandas 2.2.2
 
 ## Installation
 - Install Matlab 2018b, python 3.12.2 and all dependencies mentioned above.

@@ -13,22 +13,15 @@ import torch
 import torch.nn as nn
 from torch.nn.functional import normalize
 
-import pyro
-import pyro.distributions as dist
-from pyro.infer import SVI, JitTrace_ELBO, Trace_ELBO, Predictive
-from pyro.infer.autoguide import AutoMultivariateNormal, AutoDelta
-from pyro.optim import Adam
-from pyro.nn import PyroSample
+
+
 from torch import nn
-from pyro.nn import PyroModule
-import pyro.optim as optim
 import os
 import logging
 from torch.distributions import constraints
 
 smoke_test = ('CI' in os.environ)
 from torch.distributions import constraints
-from pyro.infer import Predictive
 import time
 #import fenics as df
 import matplotlib.animation as animation

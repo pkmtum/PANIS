@@ -148,6 +148,7 @@ dmypy.json
 
 # Portable Network Graphics
 *.png
+!docs/comparison.png
 
 # Animated Portable Network Graphics
 *.apng

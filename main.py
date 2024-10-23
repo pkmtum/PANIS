@@ -9,7 +9,7 @@ from model.pde.pdeForm2D import pdeForm
 from utils.PostProcessing import postProcessing
 from utils.tempData import storingData
 from input import *
-from utils.variousFunctions import calcRSquared, calcEpsilon, makeCGProjection, setupDevice, createFolderIfNotExists
+from utils.variousFunctions import calcRSquared, calcEpsilon, makeCGProjection, setupDevice, createFolderIfNotExists, memoryOfTensor, list_tensors
 from utils.saveEvaluationDataset import saveDatasetAll, importDatasetAll
 from model.pde.pdeTrueSolFenics import solve_pde
 import warnings

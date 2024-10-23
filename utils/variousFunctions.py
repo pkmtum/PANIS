@@ -2,6 +2,7 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import gc
 
 
 def calcRSquared(yTrue, yPred):
@@ -92,3 +93,29 @@ def memoryOfTensor(tensor):
     memory_usage_mb = memory_usage_bytes / (1024 * 1024)
     
     return memory_usage_mb
+
+def list_tensors():
+    tensors = []
+    total_memory_usage = 0  # Variable to keep track of the total memory used
+    
+    # Iterate over all objects in memory and find tensors
+    for obj in gc.get_objects():
+        if torch.is_tensor(obj) and obj.is_cuda:  # Check if it's a tensor on GPU
+            tensor_shape = tuple(obj.shape)  # Get the shape (dimensions)
+            memory_usage = memoryOfTensor(obj)
+            tensors.append((tensor_shape, memory_usage))
+            total_memory_usage += memory_usage  # Add to total memory
+    
+    # Sort by memory usage in descending order
+    sorted_tensors = sorted(tensors, key=lambda x: x[1], reverse=True)
+    
+    # Print the tensors and their memory usage
+    if sorted_tensors:
+        print("Tensors on GPU sorted by memory usage (in MB):")
+        for tensor_shape, memory_usage in sorted_tensors:
+            print(f"Shape: {tensor_shape}, Memory Usage: {memory_usage:.2f} MB")
+        
+        # Print the total memory usage
+        print(f"\nTotal memory used by all tensors: {total_memory_usage:.2f} MB")
+    else:
+        print("No GPU tensors found.")

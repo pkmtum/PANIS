@@ -1,0 +1,23 @@
+{
+    "configurations": [
+
+        
+
+        
+        {
+            "name": "main.py",
+            "type": "python",
+            "request": "launch",
+            "program": "./main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "cgApprox",
+            "type": "python",
+            "request": "launch",
+            "program": "./model/pde/cgApprox.py",
+            "justMyCode": false
+        }
+    ]
+}

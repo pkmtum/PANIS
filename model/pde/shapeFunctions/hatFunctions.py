@@ -403,6 +403,18 @@ class rbfInterpolation:
                         if not j == y.size(0) - 2 and not i == x.size(0) - 2:
                             mask1[-1, -1] = False
 
+                """
+                for k in range(Ncut):
+                    for m in range(Ncut):
+                        if k >= Ncut - m:
+                            mask1[k, m] = False
+                        if not i == 0 and not j == y.size(0) - 2:
+                            mask1[0, -1] = False
+                        if not i == 0:
+                            mask1[0, 0] = False
+                        if i == 0 and j != 0:
+                            mask1[0, 0] = False
+                """
                 mask11 = mask.clone()
 
                 for k in range(Ncut):
@@ -419,6 +431,11 @@ class rbfInterpolation:
 
                 mask22 = maskk.clone()
 
+                #mask1 = torch.triu(mask[:Ncut, :Ncut])
+                #mask2 = torch.triu(mask[:Ncut, :Ncut]).t()
+                #mask11 = torch.nn.functional.pad(mask1, pad=(0, tt.size(0)-mask1.size(0), 0, tt.size(0)-mask1.size(0)), value=False)
+                #mask22 = torch.nn.functional.pad(mask2, pad=(0, tt.size(0)-mask2.size(0), 0, tt.size(0)-mask2.size(0)), value=False)
+                
                 nodes.append(triangle1)
                 nodes.append(triangle2)
                 masks.append(mask11)
@@ -452,14 +469,16 @@ class rbfInterpolation:
         ny = torch.zeros(len(nodes), 3, 3)
         nk = torch.zeros(len(nodes), 3, 3)
         nb = torch.zeros(len(nodes), 3)
+        nxyflat = torch.zeros(len(nodes), 3, 3)
 
         for i in range(0, len(nodes)):
             nx[i], ny[i] = torch.meshgrid(nodesMap[i, :], nodesMap[i, :], indexing='ij')
             nk[i] = torch.ones(3, 3)*i
             nb[i] = torch.ones(3)*i
+        nxyflat[:] = nx[:] * (nodesMap.max()+1) + ny[:]
 
         #Kp = torch.arange(0, 81).view(9, 9)
-        kind = torch.stack((nx, ny, nk), dim=0)
+        kind = torch.stack((nx, ny, nk, nxyflat), dim=0)
         kind = torch.reshape(kind, [kind.size(0), -1])
         bind = nb.flatten()
 
@@ -575,29 +594,67 @@ class rbfInterpolation:
             uele = torch.einsum('...imjk,...ik->...ijm', uele, ut)
             c_x = torch.einsum('...ij,...ij->...ij', c_x, em)
 
-
-
-
         
+
+
+
         k = torch.einsum('...ij,ijk->...ijk', c_x, self.k)
-        Kp = torch.zeros(*c_x.size()[:-2], nodesMap.size(0), self.reducedDim**2, self.reducedDim**2)
+        #KpHeavy = torch.zeros(*c_x.size()[:-2], nodesMap.size(0), self.reducedDim**2, self.reducedDim**2)
+        Kp = torch.zeros(self.reducedDim**4, *c_x.size()[:-2])
+        #Kpc = torch.zeros(*c_x.size()[:-2], self.reducedDim**2, self.reducedDim**2)
         
+            
+
         
-        KpY = torch.zeros(*c_x.size()[:-2], nodesMap.size(0), self.reducedDim**2, self.reducedDim**2)      
+
+        """ For debugging purposes
+        K = torch.zeros(nodesMap.size(0), self.reducedDim**2, self.reducedDim**2)
+        
+
+        for m in range(0, nodesMap.size(0)):
+            for i in range(0, 3):
+                for j in range(0, 3):
+                    K[m, nodesMap[m, i], nodesMap[m, j]] += k[m, i, j]
+       
+
+        K = torch.sum(K, dim=0)
+        """
         
 
         #k = torch.reshape(k, [-1])
-        k = k.view(*k.size()[:-3], -1)
-        
-        Kp[..., self.rkind[2], self.rkind[0], self.rkind[1]] = k[..., ] 
+        k = k.view(*k.size()[:-3], -1).t()
+        Kp.index_add_(0, self.rkind[3], k)
+        Kp = Kp.t().view(*c_x.size()[:-2], self.reducedDim**2, self.reducedDim**2)  
+        ### Old method requiring 500 more memory!
+
+        #k = k.view(*k.size()[:-3], -1)
+        #Kp[..., self.rkind[2], self.rkind[0], self.rkind[1]] = k[..., ]
+        #Kp = torch.sum(Kp, dim=-3)
+
+          
+        #Ktt = torch.zeros(*c_x.size()[:-2], nodesMap.size(0), self.reducedDim**2, self.reducedDim**2)
+        #batch_dim = torch.arange(50).unsqueeze(1).expand(-1, self.rkind[2].size(0)) 
+        #Ktt.index_put_((batch_dim, self.rkind[2], self.rkind[0], self.rkind[1]), k)
+
+        #Kpc[..., self.rkind[0], self.rkind[1]] = k[..., ] 
+        #KpY = torch.zeros(*c_x.size()[:-2], nodesMap.size(0), self.reducedDim**2, self.reducedDim**2)  
+        KpY = torch.zeros(self.reducedDim**4, *c_x.size()[:-2])
+
+
         if et is not None:
-            uele = uele.view(*uele.size()[:-3], -1)
-            KpY[..., self.rkind[2], self.rkind[0], self.rkind[1]] = uele[..., ]
-            KpY = torch.sum(KpY, dim=-3)
+
+            #uele = uele.view(*uele.size()[:-3], -1)
+            #KpY[..., self.rkind[2], self.rkind[0], self.rkind[1]] = uele[..., ]
+            #KpY = torch.sum(KpY, dim=-3)
+
+            uele = uele.view(*uele.size()[:-3], -1).t()
+            KpY.index_add_(0, self.rkind[3], uele)
+            KpY = KpY.t().view(*c_x.size()[:-2], self.reducedDim**2, self.reducedDim**2)  
+
             KtY = KpY[..., self.nonBcNodes, :]
             KtY = KtY[..., :, self.nonBcNodes]
         #KpY[..., self.rkind[2], self.rkind[4], self.rkind[0], self.rkind[1]] = uele[..., ] 
-        Kp = torch.sum(Kp, dim=-3)
+        
         
 
         Kt = Kp[..., self.nonBcNodes, :]
@@ -619,7 +676,10 @@ class rbfInterpolation:
         
 
         ### For boundary conditions that arent equal to 0
+        
 
+        
+        #return Kt, rhsFromBCsDiriclet
         if et is not None:
             return Kt, KtY, rhsFromBCsDiriclet
         else:
@@ -669,10 +729,9 @@ class rbfInterpolation:
     
     def assembleSourceTerm(self):
 
-        Bp = torch.zeros(self.rnodesMap.size(0), self.reducedDim**2)
+        Bp = torch.zeros(self.reducedDim**2)
         index = self.rnodesMap.flatten()
-        Bp[self.rbind, index] = self.bb.flatten()
-        Bp = torch.sum(Bp, dim=0)
+        Bp.index_add_(0, index, self.bb.flatten())
 
         return Bp
 
